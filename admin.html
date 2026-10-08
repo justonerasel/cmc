@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - CMC</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-badge">ADMIN</div>
+        <div class="brand-text">
+          <span class="brand-title">CMC COMMAND CENTER</span>
+          <span class="brand-sub">MD RASEL HOSSEN</span>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-secondary">Visit Site</a>
+        <button id="admin-logout-btn" class="btn btn-outline">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-8">
+    <div id="admin-auth-gate" class="gate-card">
+      <div class="gate-icon">&#9881;</div>
+      <h2>Administrator Authentication Required</h2>
+      <p>Restricted to authorized system administrators only.</p>
+      <form id="admin-login-form" class="cyber-form mt-4">
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input type="email" id="admin-email" placeholder="admin@cmc.community" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="admin-pass" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-emerald w-full">Access Command Center</button>
+      </form>
+    </div>
+
+    <div id="admin-dashboard" style="display: none;">
+      <!-- Stats Row -->
+      <div class="admin-stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total Media Files</span>
+          <span class="stat-value" id="stat-media-count">5</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Submitted Messages</span>
+          <span class="stat-value" id="stat-message-count">2</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Announcements</span>
+          <span class="stat-value" id="stat-ann-count">3</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Total Visitors</span>
+          <span class="stat-value" id="stat-visitor-count">1,482</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="media">Upload & Manage Media</button>
+        <button class="admin-tab" data-tab="messages">Message Drop Inbox</button>
+        <button class="admin-tab" data-tab="announcements">Manage Bulletins</button>
+        <button class="admin-tab" data-tab="supabase">Supabase Config</button>
+      </div>
+
+      <!-- Tab Content: Media Upload -->
+      <div id="tab-media" class="admin-tab-content">
+        <div class="admin-section-card">
+          <h3>Upload New Resource to Private Vault</h3>
+          <form id="upload-media-form" class="cyber-form mt-4">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Resource Title</label>
+                <input type="text" id="upload-title" placeholder="e.g. CMC Security Guide v2" required>
+              </div>
+              <div class="form-group flex-1">
+                <label>File Type</label>
+                <select id="upload-type" required>
+                  <option value="apk">Android APK</option>
+                  <option value="document">Document (PDF/DOC)</option>
+                  <option value="audio">Audio (MP3/WAV)</option>
+                  <option value="video">Video (MP4/WEBM)</option>
+                  <option value="image">Image (PNG/JPG)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="upload-desc" rows="2" placeholder="Details about this file..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>File Name</label>
+                <input type="text" id="upload-filename" placeholder="e.g. cmc_guide.pdf" required>
+              </div>
+              <div class="form-group flex-1">
+                <label>Version / Checksum (Optional)</label>
+                <input type="text" id="upload-version" placeholder="v1.0.0">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-emerald">Save to Vault</button>
+          </form>
+        </div>
+
+        <div class="admin-section-card mt-6">
+          <h3>Existing Private Vault Files</h3>
+          <div id="admin-media-list" class="admin-items-list mt-4"></div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Messages Inbox -->
+      <div id="tab-messages" class="admin-tab-content" style="display: none;">
+        <div class="admin-section-card">
+          <h3>Submitted Messages</h3>
+          <div id="admin-messages-list" class="admin-items-list mt-4"></div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Announcements -->
+      <div id="tab-announcements" class="admin-tab-content" style="display: none;">
+        <div class="admin-section-card">
+          <h3>Publish New Announcement</h3>
+          <form id="create-ann-form" class="cyber-form mt-4">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Announcement Title</label>
+                <input type="text" id="ann-title" placeholder="Title" required>
+              </div>
+              <div class="form-group flex-1">
+                <label>Category</label>
+                <select id="ann-category">
+                  <option value="Notice">Notice</option>
+                  <option value="Security">Security</option>
+                  <option value="Update">Update</option>
+                  <option value="Release">Release</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Content</label>
+              <textarea id="ann-content" rows="3" required placeholder="Announcement details..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-emerald">Publish Bulletin</button>
+          </form>
+        </div>
+
+        <div class="admin-section-card mt-6">
+          <h3>Current Announcements</h3>
+          <div id="admin-ann-list" class="admin-items-list mt-4"></div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Supabase Setup -->
+      <div id="tab-supabase" class="admin-tab-content" style="display: none;">
+        <div class="admin-section-card">
+          <h3>Supabase Credentials Configuration</h3>
+          <p class="text-muted">Enter your Supabase Project URL and Public Anon Key. These are stored securely in your browser's local client storage.</p>
+          <form id="supabase-config-form" class="cyber-form mt-4">
+            <div class="form-group">
+              <label>Project URL</label>
+              <input type="url" id="cfg-url" placeholder="https://xyzcompany.supabase.co" required>
+            </div>
+            <div class="form-group">
+              <label>Public Anon Key</label>
+              <input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
+            </div>
+            <button type="submit" class="btn btn-emerald">Save & Connect Supabase</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
